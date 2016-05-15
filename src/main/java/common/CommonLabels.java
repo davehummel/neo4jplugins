@@ -19,6 +19,7 @@ public class CommonLabels {
     public static final Label SERVICE = Label.label("Service");
     public static final Label PACKAGE = Label.label("Package");
 
+    public static final Label CATEGORY = Label.label("Category");
 
     public static final Label UGC = Label.label("UGC");
     public static final Label REVIEW = Label.label("Review");
@@ -31,6 +32,7 @@ public class CommonLabels {
     public static final Label[] COMPLETE_PACKAGE= {SUBJECT,PACKAGE};
     public static final Label[] COMPLETE_SERVICE= {SUBJECT,SERVICE};
     public static final Label[] COMPLETE_PRODUCT= {SUBJECT,PRODUCT};
+    public static final Label[] COMPLETE_CATEGORY= {SUBJECT,CATEGORY};
 
     public static final Label[] COMPLETE_ACCOUNT= {ACCOUNT};
     public static final Label[] COMPLETE_BRANDFAMILY= {SUBJECT,BRAND_FAMILY,SOURCE};

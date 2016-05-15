@@ -59,6 +59,11 @@
       <version>2.0</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.neo4j.app</groupId>
+      <artifactId>neo4j-server</artifactId>
+      <version>RELEASE</version>
+    </dependency>
   </dependencies>
 
   <build>

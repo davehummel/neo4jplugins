@@ -11,7 +11,7 @@ public class CommonRelationships {
     // OWNS = Account ownership relationship, BrandFamily - Brand
     static final RelationshipType OWNS = RelationshipType.withName("OWNS");
 
-    // OFFERS = Presents for feedback.  Merchants offer products, Brands with sites also offer products.
+    // OFFERS = Any subject is offered by some parent.  Merchants offer products, Brands with sites can also offer products.
     // this implies an ownership of a product/subject.
     static final RelationshipType OFFERS = RelationshipType.withName("OFFERS");
 
@@ -23,6 +23,12 @@ public class CommonRelationships {
 
     // DESCRIBES = UGC DESCRIBES any Subject like a product or service or a brand
     static final RelationshipType DESCRIBES = RelationshipType.withName("DESCRIBES");
+
+    // RELATED = Subjects are related if they are similar to each other .. ie product variants or product matches
+    static final RelationshipType RELATED = RelationshipType.withName("RELATED");
+
+    // FITS = Subjects FITS categories
+    static final RelationshipType FITS = RelationshipType.withName("FITS");
 
 }
 
