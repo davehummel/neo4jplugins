@@ -1,4 +1,4 @@
-package product;
+package internal.product;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +24,8 @@ public class ProductImportResourceTest {
         db.execute("Create Index On :Account(id)");
         db.execute("Create Index On :Subject(pr_id)");
         db.execute("Create Index On :Product(prod_id)");
+
+
     }
 
     @Test
@@ -32,7 +34,7 @@ public class ProductImportResourceTest {
 
        // client.target()
         String location = HTTP.GET(server.httpURI().resolve("product").toString()).location();
-        HTTP.Response response = HTTP.withHeaders("Accept","*/*","path","C:/dev/product.csv","max","1320000","skip","1").GET(location+"import/load");
+        HTTP.Response response = HTTP.withHeaders("Accept","*/*","path","C:/dev/internal.product.csv","max","1320000","skip","1").GET(location+"import/load");
 
         System.out.println(response);
 

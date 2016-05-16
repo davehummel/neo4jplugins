@@ -21,7 +21,7 @@ public class ModerationCode {
 
     public static final Label MODERATION_CODE = Label.label("MOD_CODE");
 
-    public static final String[][] DEFAULTS = {{"","OK"},{"Test Review"}}
+    public static final String[][] DEFAULTS = {{"","OK"},{"Test Review"}};
 
     static public void CLEAR_AND_SEED_DB(GraphDatabaseService db){
         try(Transaction tx = db.beginTx()) {

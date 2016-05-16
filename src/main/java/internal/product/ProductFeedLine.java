@@ -1,10 +1,9 @@
-package product;
+package internal.product;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Created by dmhum_000 on 5/13/2016.

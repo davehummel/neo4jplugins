@@ -16,14 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package review;
+package internal.review;
 
 import org.neo4j.graphdb.*;
-import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.string.UTF8;
-import product.ProductFeedLine;
 
-import javax.management.relation.Relation;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -38,8 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static java.lang.Boolean.TRUE;
 
 
 @Path( "/import" )

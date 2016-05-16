@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package product;
+package internal.product;
 
 import javax.ws.rs.*;
 import javax.ws.rs.Path;
@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.neo4j.graphdb.*;
-import org.neo4j.helpers.collection.MapUtil;
 import org.neo4j.string.UTF8;
 
 import java.io.BufferedReader;
@@ -35,8 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static java.lang.Boolean.TRUE;
 
 
 @Path( "/import" )

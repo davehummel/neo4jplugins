@@ -12,7 +12,7 @@
   <description>A template project for building a Neo4j Procedure</description>
 
   <properties>
-    <neo4j.version>3.0.0</neo4j.version>
+    <neo4j.version>3.0.1</neo4j.version>
   </properties>
 
   <dependencies>
@@ -27,6 +27,48 @@
       <version>${neo4j.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.neo4j.app</groupId>
+      <artifactId>neo4j-server</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.neo4j</groupId>
+      <artifactId>neo4j-kernel</artifactId>
+      <version>${neo4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+
+    <!-- http://mvnrepository.com/artifact/org.apache.lucene/lucene-suggest -->
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-suggest</artifactId>
+      <version>6.0.0</version>
+    </dependency>
+
+
+    <dependency>
+      <!-- Used to send cypher statements to our procedure. -->
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
+      <version>1.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>2.0</version>
+      <scope>provided</scope>
+    </dependency>
+
 
     <!-- Test Dependencies -->
     <dependency>
@@ -38,13 +80,6 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <!-- Used to send cypher statements to our procedure. -->
-      <groupId>org.neo4j.driver</groupId>
-      <artifactId>neo4j-java-driver</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -52,18 +87,13 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
-      <version>2.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.neo4j.app</groupId>
-      <artifactId>neo4j-server</artifactId>
+      <groupId>org.neo4j.driver</groupId>
+      <artifactId>neo4j-java-driver</artifactId>
       <version>RELEASE</version>
     </dependency>
+
+
   </dependencies>
 
   <build>

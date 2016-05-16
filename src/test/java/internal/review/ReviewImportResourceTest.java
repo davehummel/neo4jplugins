@@ -1,4 +1,4 @@
-package review;
+package internal.review;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +7,6 @@ import org.neo4j.harness.ServerControls;
 import org.neo4j.harness.TestServerBuilder;
 import org.neo4j.harness.TestServerBuilders;
 import org.neo4j.test.server.HTTP;
-import product.ProductImportResource;
 
 /**
  * Created by dmhum_000 on 5/13/2016.
@@ -32,7 +31,7 @@ public class ReviewImportResourceTest {
     {
 
         String location = HTTP.GET(server.httpURI().resolve("review").toString()).location();
-        HTTP.Response response = HTTP.withHeaders("Accept","*/*","path","C:/dev/review.csv","max","1320000","skip","1").GET(location+"import/load");
+        HTTP.Response response = HTTP.withHeaders("Accept","*/*","path","C:/dev/internal.review.csv","max","1320000","skip","1").GET(location+"import/load");
 
         System.out.println(response);
 

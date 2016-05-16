@@ -1,4 +1,4 @@
-package example;
+package internal.example;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ import org.neo4j.procedure.Procedure;
 import static org.neo4j.helpers.collection.MapUtil.stringMap;
 
 /**
- * This is an example showing how you could expose Neo4j's full text indexes as
+ * This is an internal.example showing how you could expose Neo4j's full text indexes as
  * two procedures - one for updating indexes, and one for querying by label and
  * the lucene query language.
  */
@@ -73,7 +73,7 @@ public class FullTextIndex
      *              documentation for full available syntax.
      * @return the nodes found by the query
      */
-    @Procedure("example.search")
+    @Procedure("internal.example.search")
     @PerformsWrites // TODO: This is here as a workaround, because index().forNodes() is not read-only
     public Stream<SearchHit> search( @Name("label") String label,
                                      @Name("query") String query )
@@ -116,7 +116,7 @@ public class FullTextIndex
      * @param propKeys a list of property keys to index, only the ones the node
      *                 actually contains will be added
      */
-    @Procedure("example.index")
+    @Procedure("internal.example.index")
     @PerformsWrites
     public void index( @Name("nodeId") long nodeId,
                        @Name("properties") List<String> propKeys )
@@ -129,7 +129,7 @@ public class FullTextIndex
         Set<Map.Entry<String,Object>> properties =
                 node.getProperties( propKeys.toArray( new String[0] ) ).entrySet();
 
-        // Index every label (this is just as an example, we could filter which labels to index)
+        // Index every label (this is just as an internal.example, we could filter which labels to index)
         for ( Label label : node.getLabels() )
         {
             Index<Node> index = db.index().forNodes( indexName( label.name() ), FULL_TEXT );
