@@ -2,7 +2,6 @@ package external.brand;
 
 import common.MergeRecommendation;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.search.spell.JaroWinklerDistance;
 import org.neo4j.cypher.internal.frontend.v2_3.ast.Merge;
 import org.neo4j.cypher.internal.frontend.v2_3.ast.Parameter;
 import org.neo4j.driver.v1.*;

@@ -25,6 +25,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import common.CommonLabels;
+import common.CommonProperties;
+import common.CommonRelationships;
 import org.neo4j.graphdb.*;
 import org.neo4j.string.UTF8;
 
@@ -33,31 +36,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import static common.CommonLabels.*;
+import static common.CommonRelationships.CARRIES;
 
 
 @Path( "/import" )
 public class ProductImportResource
 {
-    private static final long BATCH_SIZE = 500000;
+    private static final long BATCH_SIZE = 50000;
     private final GraphDatabaseService db;
 
-
-    static final RelationshipType SELLS = RelationshipType.withName("SELLS");
-    static final RelationshipType OWNS = RelationshipType.withName("OWNS");
-    static final RelationshipType CARRIES = RelationshipType.withName("CARRIES");
-    static final RelationshipType MAKES = RelationshipType.withName("MAKES");
-
-    static final Label PRODUCT = Label.label("Product");
-    static final Label ACCOUNT = Label.label("Account");
-    static final Label SUBJECT = Label.label("Subject");
-    static final Label MERCHANT = Label.label("Merchant");
-    static final Label BRAND = Label.label("Brand");
 
 
     Map<Long,Node> accountLRU = lruCache(10);
     Map<Long,Node> merchantLRU = lruCache(10);
     Map<String,Node> brandLRU = lruCache(100);
+    Map<String,Node> categoryLRU = lruCache(5000);
 
 
     public ProductImportResource( @Context GraphDatabaseService database )
@@ -174,6 +171,8 @@ public class ProductImportResource
         public long graph_hits;
         public long merch_brand_creates;
         public long merch_brand_reuse;
+        public long cat_reuse;
+        public long cat_creates;
         public long multi_lines;
         public boolean eof=false;
 
@@ -186,23 +185,28 @@ public class ProductImportResource
                     ", creates=" + creates +
                     ", batches=" + batches +
                     ", graph_hits=" + graph_hits +
-                    ", merch_brand_creates=" + merch_brand_creates +
-                    ", merch_brand_reuse=" + merch_brand_reuse +
+                    ", brand_creates=" + merch_brand_creates +
+                    ", brand_reuse=" + merch_brand_reuse +
+                    ", cat_creates=" + cat_creates +
+                    ", cat_reuse=" + cat_reuse +
                     ", multi_lines=" + multi_lines +
                     ", eof=" + eof +
                     '}';
         }
     }
     private boolean processLine(String s, Summary summary, Map<Long, Node> accountLRU, Map<Long, Node> merchantLRU, Map<String, Node> brandLRU) {
+        Node productNode = db.createNode(PRODUCT,SUBJECT);
         try{
+
             ProductFeedLine line = new ProductFeedLine(s);
+            CommonProperties.setBaseProductProperties(productNode,line.productID,line.name,line.pageID,line.variant,line.locale,line.description,line.productURL,line.imageURL,line.discontinued,line.date);
             // create / find account
             Node accountNode = accountLRU.get(line.accountID);
             if (accountNode == null) {
-                accountNode = db.findNode(ACCOUNT,"id",line.accountID);
+                accountNode = db.findNode(ACCOUNT,CommonProperties.ACCOUNT_ID,line.accountID);
                 if (accountNode == null) {
                     accountNode = db.createNode(ACCOUNT);
-                    accountNode.setProperty("id", line.accountID);
+                    CommonProperties.setAccountProperties(accountNode,line.accountID);
                     summary.creates++;
                 }else{
                     summary.graph_hits++;
@@ -213,12 +217,11 @@ public class ProductImportResource
             }
             Node merchantNode = merchantLRU.get(line.merchantID);
             if (merchantNode == null) {
-                merchantNode = db.findNode(SUBJECT,"pr_id",Long.toString(line.merchantID));
+                merchantNode = db.findNode(MERCHANT,CommonProperties.MERCHANT_ID,line.merchantID);
                 if (merchantNode == null) {
                     merchantNode = db.createNode(MERCHANT, SUBJECT);
-                    merchantNode.setProperty("pr_id", Long.toString(line.merchantID));
-                    merchantNode.setProperty("grp_id",line.merchantGroupID);
-                    accountNode.createRelationshipTo(merchantNode, OWNS);
+                    CommonProperties.setMerchantProperties(merchantNode,line.merchantID,line.merchantGroupID);
+                    accountNode.createRelationshipTo(merchantNode, CommonRelationships.OWNS);
                     summary.creates++;
                 }else{
                     summary.graph_hits++;
@@ -231,11 +234,10 @@ public class ProductImportResource
             if (!line.brand.isEmpty()){
                 brandNode = brandLRU.get(line.brand);
                 if (brandNode == null) {
-                    brandNode = db.findNode(SUBJECT,"pr_id","B:" +line.brand);
+                    brandNode = db.findNode(BRAND,CommonProperties.BRAND_NAME,line.brand);
                     if (brandNode == null) {
                         brandNode = db.createNode(BRAND, SUBJECT);
-                        brandNode.setProperty("pr_id", "B:" + line.brand);
-                        brandNode.setProperty("name", line.brand);
+                        CommonProperties.setBrandProperties(brandNode,line.brand);
                         summary.creates++;
                     }else{
                         summary.graph_hits++;
@@ -246,24 +248,24 @@ public class ProductImportResource
                 }
 
             }
-            Node productNode = db.createNode(PRODUCT,SUBJECT);
-            productNode.setProperty("pr_id",Long.toString(line.merchantID)+":"+line.pageID+":"+line.variant+":"+line.locale);
-            productNode.setProperty("page_id",line.pageID);
-            productNode.setProperty("model_id",line.modelID);
-            productNode.setProperty("prod_id",line.productID);
-            if (!line.productURL.isEmpty())
-                productNode.setProperty("url",line.productURL);
-            if (!line.imageURL.isEmpty())
-            productNode.setProperty("img_url",line.imageURL);
-            if (!line.name.isEmpty())
-                productNode.setProperty("name",line.name);
-            if (!line.description.isEmpty())
-                productNode.setProperty("desc",line.description);
-            merchantNode.createRelationshipTo(productNode,SELLS);
+
+            Node catEdgeNode = null;
+            String categoryPath = line.catPath;
+
+            catEdgeNode = categoryLRU.get(line.merchantID+categoryPath);
+            if (catEdgeNode==null){
+                List<String> categories = CategoryProcessor.splitCategories(categoryPath);
+                catEdgeNode = CategoryProcessor.mergeCategoryPath(merchantNode, categories , summary);
+                categoryLRU.put(line.merchantID+categoryPath,catEdgeNode);
+            }else{
+                summary.cat_reuse++;
+            }
+
+            productNode.createRelationshipTo(catEdgeNode,CommonRelationships.FITS);
             if (brandNode!=null) {
-                brandNode.createRelationshipTo(productNode, MAKES);
+                brandNode.createRelationshipTo(productNode, CommonRelationships.MARKETS);
                 boolean connectedToMerchant = false;
-                for (Relationship r:brandNode.getRelationships(Direction.INCOMING,CARRIES)){
+                for (Relationship r:brandNode.getRelationships(Direction.INCOMING,CommonRelationships.CARRIES)){
                     if (r.getStartNode().getId() == merchantNode.getId()) {
                         summary.merch_brand_reuse++;
                         connectedToMerchant = true;
@@ -276,6 +278,7 @@ public class ProductImportResource
                 }
             }
         }catch (Throwable n){
+            productNode.delete();
             return false;
         }
         return true;

@@ -26,7 +26,7 @@ public class ProductFeedLine {
     public final String description;
     public final String brand;
     public final String subBrand;
-    public final String[] catPath;
+    public final String catPath;
     public final boolean inStock;
     public final long date;
     public final boolean discontinued;
@@ -116,11 +116,7 @@ public class ProductFeedLine {
 
         subBrand = result.get(18).length()>0?  result.get(18).toLowerCase(): null;
 
-        if (result.get(21).endsWith(":")){
-            catPath = result.get(21).toLowerCase().substring(0,result.get(21).length()-1).split(":");
-        }else {
-            catPath = result.get(21).toLowerCase().split(":");
-        }
+        catPath = result.get(21);
 
         inStock = !result.get(28).equals("f");
 

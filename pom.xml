@@ -40,18 +40,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.4</version>
-    </dependency>
-
-    <!-- http://mvnrepository.com/artifact/org.apache.lucene/lucene-suggest -->
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-suggest</artifactId>
-      <version>6.0.0</version>
-    </dependency>
 
 
     <dependency>
