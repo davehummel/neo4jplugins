@@ -18,6 +18,7 @@
  */
 package internal.product;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -25,6 +26,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import common.CommonLabels;
 import common.CommonProperties;
 import common.CommonRelationships;
@@ -33,6 +37,7 @@ import org.neo4j.string.UTF8;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
@@ -57,15 +62,38 @@ public class ProductImportResource
     Map<String,Node> categoryLRU = lruCache(5000);
 
 
+
+    JsonFactory jfactory = new JsonFactory();
+
+
     public ProductImportResource( @Context GraphDatabaseService database )
     {
         this.db = database;
     }
 
+
+    @POST
+    @Produces( MediaType.APPLICATION_JSON )
+    @Path( "/batch" )
+    public Response batch(InputStream batch, @Context HttpServletRequest request ) {
+        try {
+            JsonParser parser = jfactory.createParser(batch);
+            while(parser.nextToken() != JsonToken.END_OBJECT){
+                System.out.println(parser.getCurrentToken());
+
+            }
+
+
+            } catch (IOException e) {
+            return Response.status( Status.INTERNAL_SERVER_ERROR ).entity( UTF8.encode(e.toString() ) ).build();
+        }
+        return Response.status( Status.OK ).entity( UTF8.encode("Hello world:" ) ).build();
+    }
+
     @GET
     @Produces( MediaType.TEXT_PLAIN )
-    @Path( "/load" )
-    public Response load( @HeaderParam( "path" ) String path, @HeaderParam("skip") long skip, @HeaderParam("max") long max)
+    @Path( "/file" )
+    public Response file( @HeaderParam( "path" ) String path, @HeaderParam("skip") long skip, @HeaderParam("max") long max)
     {
         System.out.println("Product Load! path:"+path+" skip:"+skip+" max:"+max);
         Summary summary = new Summary();
